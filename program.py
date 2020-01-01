@@ -1,6 +1,7 @@
 from Node import Node
 from Edge import Edge
 import numpy as np
+import random
 import sys
 
 # print ('Number of arguments:', len(sys.argv), 'arguments.')
@@ -16,11 +17,20 @@ import sys
 # else:
 #     print("Wrong Format")
 
-def generate(nodeList,number):
-    to=len(nodeList)
-    randomList = np.random.uniform(0,1,100)
-    # randomList=np.zeros((2, 3))
-    # print(randomList)
+# Size of initial population filled with some permutation of 0s and 1s
+POP_SIZE = 200
+POP_SIZE_MIN = 100
+# Maximum, Minimum number of generations the algorithm will run
+GEN_MAX = 400
+GEN_MIN = 100
+
+def generate(number): #popuşation size
+    randomList = [random.randint(0, 1) for x in range(0, number)]
+    # randomList = np.random.uniform(0,1,100)
+    # # randomList=np.zeros((2, 3))
+    # # print(randomList)
+    print(randomList)
+    return randomList
 
 def readFile(path):
     nodeList = []
@@ -58,4 +68,10 @@ if __name__ == "__main__":
     # print("uzunluğu", len(edgeList))
     # for edge in edgeList:
     #     print(edge.toString())
-    randomList = generate(nodeList, 100)
+    randomList = generate(1000)
+    generation=1
+    for g in range(0, GEN_MAX):
+        print("Generation %d with population size %d" % (generation, len(randomList)))
+        generation+=1
+
+

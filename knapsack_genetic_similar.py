@@ -10,16 +10,16 @@ from Item import Item
 # CONFIG
 
 # Generates 0-30 random items with value = 0-30 and weight = 0-30
-ITEMS = [Item(random.randint(0, 30), random.randint(0, 30)) for x in range(0, 200)]
+ITEMS = [Item(random.randint(0, 30), random.randint(0, 30)) for x in range(0, 10)] #node sayısı
 
 # Capacity of the knapsack randomized according to number of items
 CAPACITY = 10 * len(ITEMS)
 
 # Size of initial population filled with some permutation of 0s and 1s
-POP_SIZE = 200
+POP_SIZE = 20
 
 # Maximum number of generations the algorithm will run
-GEN_MAX = 400
+GEN_MAX = 10
 
 # Start initial population with only zeros? If not, random permutation of 0s and 1s will be given
 # Starting with 0s and 1s will generally make you find a good solution faster
@@ -122,8 +122,9 @@ if __name__ == "__main__":
     print(population)
     for g in range(0, GEN_MAX):
         print("Generation %d with population size %d" % (generation, len(population)))
-
+        print(population)
         population = sorted(population, key=lambda x: fitness(x), reverse=True)
+        print(population)
         for i in population:
             print("%s, fit: %s" % (str(i), fitness(i)))
 
