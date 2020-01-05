@@ -29,7 +29,7 @@ def generate(number): #popuşation size
     # randomList = np.random.uniform(0,1,100)
     # # randomList=np.zeros((2, 3))
     # # print(randomList)
-    print(randomList)
+    # print(randomList)
     return randomList
 
 def readFile(path):
@@ -51,13 +51,24 @@ def readFile(path):
                 nodeList.append(node)
             elif i > nodes + 1:
                 # print(line)
-                edge = Edge(int(line.split()[0]), int(line.split()[1]))
-                edgeList.append(edge)
+                f = int(line.split()[0])
+                t = int(line.split()[1])
+                if len(edgeList) == 0:
+                    edge = Edge(f, t)
+                    edgeList.append(edge)
+                    continue
+                for e in edgeList:
+                    if (e.getBegin() != f and e.getEnd() != t) or (e.getBegin() != t and e.getEnd() != f):
+                        edge = Edge(f, t)
+                        edgeList.append(edge)
+                        break
+
             # print(nodeList[1].toString())
             # print(nodeList[1].getWeight())
             # print(edgeList[1].toString())
             # print(edgeList[1].getEnd())
     return nodeList,edgeList
+
 
 if __name__ == "__main__":
     path = "graphs\\003.txt" #TODO:buraya path gelecek
@@ -68,10 +79,13 @@ if __name__ == "__main__":
     # print("uzunluğu", len(edgeList))
     # for edge in edgeList:
     #     print(edge.toString())
-    randomList = generate(1000)
+    print(len(edgeList))
+
     generation=1
-    for g in range(0, GEN_MAX):
-        print("Generation %d with population size %d" % (generation, len(randomList)))
-        generation+=1
+    # for g in range(0, GEN_MAX):
+    #     randomList = generate(1000)
+    #     print("Generation %d with population size %d" % (generation, len(randomList)))
+    #     print(randomList)
+    #     generation+=1
 
 
