@@ -15,10 +15,10 @@ import random
 #     print("Wrong Format")
 
 # Size of initial population filled with some permutation of 0s and 1s
-POP_SIZE = 100
+POP_SIZE = 1
 POP_SIZE_MIN = 200
 # Maximum, Minimum number of generations the algorithm will run
-GEN_MAX = 400
+GEN_NUMBER = 1
 GEN_MIN = 100
 
 def generate(number): #population size
@@ -136,14 +136,19 @@ if __name__ == "__main__":
     path = "graphs\\003.txt" #TODO:buraya path gelecek
     nodeList = readFile(path)
     solutionList = []
-    for i in range(1):#POP_SIZE
+    for i in range(POP_SIZE):#POP_SIZE
         solution = generate(len(nodeList))
         print(solution)
         solutionList.append(solution)
-        adjacency = editEdgeMatrix(nodeList,solution)
+        #adjacency = editEdgeMatrix(nodeList,solution)
         while isNotFeasible(solution, nodeList):
-            print("harun baba")
+            # print("harun baba")
             solution = repair(solution, nodeList)
-            
-        # repair(solution,nodeList)
+        solutionList.append(solution) # actually population
+        solutionList.append(solution) # actually population
+    GEN_NUMBER = 1 #GEN_MAX
+    while GEN_NUMBER != 0:
+        print("Number of the generation",GEN_NUMBER)
+        for i in range(POP_SIZE):
+            print("haryn babuş")
 
