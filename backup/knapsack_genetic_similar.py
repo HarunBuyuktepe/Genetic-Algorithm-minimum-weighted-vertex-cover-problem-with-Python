@@ -1,5 +1,5 @@
 import random
-from Item import Item
+from backup.Item import Item
 
 ##########################################################################################
 # 0-1 Knapsack Problem solved using Genetic Algorithms

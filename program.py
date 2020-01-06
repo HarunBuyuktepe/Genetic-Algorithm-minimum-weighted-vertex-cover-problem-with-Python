@@ -1,8 +1,5 @@
 from Node import Node
-from Edge import Edge
-import numpy as np
 import random
-import sys
 
 # print ('Number of arguments:', len(sys.argv), 'arguments.')
 # print ('Argument List:', str(sys.argv))
@@ -18,18 +15,16 @@ import sys
 #     print("Wrong Format")
 
 # Size of initial population filled with some permutation of 0s and 1s
-POP_SIZE = 200
-POP_SIZE_MIN = 100
+POP_SIZE = 100
+POP_SIZE_MIN = 200
 # Maximum, Minimum number of generations the algorithm will run
 GEN_MAX = 400
 GEN_MIN = 100
 
-def generate(number): #popuşation size
-    randomList = [random.randint(0, 1) for x in range(0, number)]
-    # randomList = np.random.uniform(0,1,100)
-    # # randomList=np.zeros((2, 3))
-    # # print(randomList)
-    # print(randomList)
+def generate(number): #population size
+    randomList=""
+    for i in range(number):
+        randomList += str(random.randint(0, 1))
     return randomList
 
 def readFile(path):
@@ -40,52 +35,115 @@ def readFile(path):
     with open(path) as fp:
         for i, line in enumerate(fp):
             if i == 0:
-                # print(line)
                 nodes = int(line)
             elif i == 1:
-                # print(line)
                 edges = float(line)
             elif i > 1 and i < nodes + 2:
-                # print(line)
-                node = Node(int(line.split()[0]), float(line.split()[1].replace(',', '.')))
+                node = Node(int(line.split()[0]), float(line.split()[1].replace(',', '.')), [])
                 nodeList.append(node)
             elif i > nodes + 1:
-                # print(line)
                 f = int(line.split()[0])
                 t = int(line.split()[1])
-                if len(edgeList) == 0:
-                    edge = Edge(f, t)
-                    edgeList.append(edge)
-                    continue
-                for e in edgeList:
-                    if (e.getBegin() != f and e.getEnd() != t) or (e.getBegin() != t and e.getEnd() != f):
-                        edge = Edge(f, t)
-                        edgeList.append(edge)
-                        break
+                nodeList[f].getNeighbors().append(nodeList[t])
 
-            # print(nodeList[1].toString())
-            # print(nodeList[1].getWeight())
-            # print(edgeList[1].toString())
-            # print(edgeList[1].getEnd())
-    return nodeList,edgeList
+    return nodeList
 
+
+def editEdgeMatrix(nodeList, solution): # fill edge matrix
+    edgeMatrix = []
+    for i in range(len(nodeList)): # create empty adjacency matrix
+        edgeMatrix.append(([0 for i in range(len(nodeList))]))
+
+    for i in range(len(nodeList)):
+        if(solution[i]=='1'):
+            for j in range(len(nodeList[i].getNeighbors())):
+                edgeMatrix[i][nodeList[i].getNeighbors()[j].number] = 1
+                edgeMatrix[nodeList[i].getNeighbors()[j].number][i] = 1
+    return edgeMatrix
+
+def isNotFeasible(solution,nodeList):
+    isFeasible = False
+    for i in range(len(solution)):
+        if solution[i]=='0':
+            for j in range(len(nodeList[i].getNeighbors())):
+                if solution[nodeList[i].getNeighbors()[j].getNumber()]=='0':
+                    return True
+    return False
+
+
+def repair(solution, nodeList):
+    print(solution)
+    totalFitValue = 0.0
+    candidate =[]
+    numberOfZeroWeight = 0
+    repairedSol = ""
+    for i in range(len(nodeList)):
+        if (solution[i] == '0'):
+            fitnessValue = 0.0
+            notVisited = 0
+            unvisitedNode = nodeList[i]
+
+            for j in range(len(unvisitedNode.getNeighbors())):
+                # print(unvisitedNode.getNeighbors()[j].number)
+                if solution[unvisitedNode.getNeighbors()[j].number] == '0':
+                    notVisited +=1
+
+
+
+            # print(unvisitedNode.getWeight())
+            if unvisitedNode.getWeight() ==0:
+                unvisitedNode.weight=1
+            fitnessValue = notVisited / unvisitedNode.getWeight()
+
+
+            if fitnessValue != 0:
+                if unvisitedNode.getWeight() == 0:
+                    totalFitValue+=fitnessValue
+                    candidate.append([unvisitedNode, -1])
+                else:
+                    candidate.append([unvisitedNode,fitnessValue])
+    # for i in range(len(candidate)):
+    #     print(candidate[i][0].toString()," ",candidate[i][1])
+    maxfitness = 0.0
+    candi=random.random()
+    candidate = sorted(candidate,key=lambda l:l[1], reverse=True)
+    # for i in range(len(candidate)):
+        # print(candidate[i][0].toString()," ",candidate[i][1])
+        # maxfitness = candidate[0][1]
+        # print(maxfitness)
+    maxfitness = candidate[0][1]
+
+    totalFitValue = totalFitValue + (numberOfZeroWeight * maxfitness)
+
+    if totalFitValue != 0:
+       eachPortionSize = 1 / totalFitValue
+    else:
+        eachPortionSize = 1
+    threshold=0
+    for c in candidate:
+        if threshold + eachPortionSize * c[0].getWeight() > candi:
+            # repairedSol = solution
+            repairedSol = [char for char in solution]
+            print(c[0].getNumber(),"-----------")
+            repairedSol[c[0].getNumber()] = '1'
+            repairedSol=''.join(repairedSol)
+            break
+        threshold += eachPortionSize * c[0].getWeight()
+    print(repairedSol)
+    return repairedSol
 
 if __name__ == "__main__":
     path = "graphs\\003.txt" #TODO:buraya path gelecek
-    nodeList,edgeList = readFile(path)
-    # print("uzunluğu",len(nodeList))
-    # for node in nodeList:
-    #     print(node.toString())
-    # print("uzunluğu", len(edgeList))
-    # for edge in edgeList:
-    #     print(edge.toString())
-    print(len(edgeList))
-
-    generation=1
-    # for g in range(0, GEN_MAX):
-    #     randomList = generate(1000)
-    #     print("Generation %d with population size %d" % (generation, len(randomList)))
-    #     print(randomList)
-    #     generation+=1
-
+    nodeList = readFile(path)
+    solutionList = []
+    for i in range(1):#POP_SIZE
+        solution = generate(len(nodeList))
+        print(solution)
+        solutionList.append(solution)
+        adjacency = editEdgeMatrix(nodeList,solution)
+        while isNotFeasible(solution, nodeList):
+            print("harun baba")
+            solution = repair(solution, nodeList)
+            
+        # repair(solution,nodeList)
 
