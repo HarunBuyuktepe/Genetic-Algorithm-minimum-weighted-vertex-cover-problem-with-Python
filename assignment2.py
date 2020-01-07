@@ -4,26 +4,37 @@ import sys
 # print ('Number of arguments:', len(sys.argv), 'arguments.')
 # print ('Argument List:', str(sys.argv))
 
-tokens = (str(sys.argv).replace('\'','').replace(',','').replace(']','').split())
-if len(tokens)==7:
-    print('Name of the graph file ',tokens[2])
-    print('Number of generations ',tokens[3])
-    print('Population size ',tokens[4])
-    print('Crossover probability ',tokens[5])
-    print('Mutation probability ',tokens[6])
+tokens = [0]#(str(sys.argv).replace('\'','').replace(',','').replace(']','').split())
+tokens.append("030.txt")
+tokens.append("400")
+tokens.append("100")
+tokens.append("0.5")
+tokens.append("0.05")
+tokens[1]="030.txt"
+tokens[2]="20"
+tokens[3]="20"
+tokens[4]="0.5"
+tokens[5]="0.05"
+if len(tokens)==6:
+    print('Name of the graph file ',tokens[1])
+    print('Number of generations ',tokens[2])
+    print('Population size ',tokens[3])
+    print('Crossover probability ',tokens[4])
+    print('Mutation probability ',tokens[5])
 else:
     print("Wrong Format")
-Filename=tokens[2]
+Filename=tokens[1]
 # Size of initial population filled with some permutation of 0s and 1s
-POP_SIZE = int(tokens[4])
+POP_SIZE = int(tokens[3])
 # Maximum, Minimum number of generations the algorithm will run
-GEN_NUMBER = int(tokens[3])
-GEN_NUMBER1= int(tokens[3])
+GEN_NUMBER = int(tokens[2])
+GEN_NUMBER1= int(tokens[2])
 # crossoverProbability
-CROSSOVER = float(tokens[5])
+CROSSOVER = float(tokens[4])
 # Mutasyon
-MUTATIONPROB =tokens[6]
+MUTATIONPROB =tokens[5]
 print(Filename," ", GEN_NUMBER," ",POP_SIZE," ",CROSSOVER," ",MUTATIONPROB)
+
 def generate(number): #population size
     randomList=""
     for i in range(number):
@@ -32,7 +43,9 @@ def generate(number): #population size
 
 def readFile(path):
     nodeList = []
+    nodess = {}
     nodes = 0
+    j = 0
     with open(path) as fp:
         for i, line in enumerate(fp):
             if i == 0:
@@ -41,13 +54,15 @@ def readFile(path):
                 edges = float(line)
             elif i > 1 and i < nodes + 2:
                 node = Node(int(line.split()[0]), float(line.split()[1].replace(',', '.')), [])
+                nodess[j] = node
+                j += 1
                 nodeList.append(node)
             elif i > nodes + 1:
                 f = int(line.split()[0])
                 t = int(line.split()[1])
                 nodeList[f].getNeighbors().append(nodeList[t])
 
-    return nodeList
+    return nodess
 
 def isNotFeasible(solution,nodeList):
     for i in range(len(solution)):
@@ -69,12 +84,12 @@ def repair(solution, nodeList):
             notVisited = 0
             unvisitedNode = nodeList[i]
 
-            for j in range(len(unvisitedNode.getNeighbors())):
-                if solution[unvisitedNode.getNeighbors()[j].number] == '0':
+            for j in range(len(nodeList[i].getNeighbors())):
+                if solution[nodeList[i].getNeighbors()[j].number] == '0':
                     notVisited +=1
 
             # print(unvisitedNode.getWeight())
-            if unvisitedNode.getWeight() ==0:
+            if unvisitedNode.getWeight() == 0:
                 unvisitedNode.weight=1
             fitnessValue = notVisited / unvisitedNode.getWeight()
 
@@ -87,7 +102,7 @@ def repair(solution, nodeList):
 
     maxfitness = 0.0
     candi=random.random()
-    candidate = sorted(candidate,key=lambda l:l[1], reverse=True)
+    # candidate = sorted(candidate,key=lambda l:l[1], reverse=True)
     maxfitness = candidate[0][1]
 
     totalFitValue = totalFitValue + (numberOfZeroWeight * maxfitness)
@@ -105,6 +120,8 @@ def repair(solution, nodeList):
             break
         threshold += eachPortionSize * c[0].getWeight()
     # print(repairedSol)
+    if repairedSol == '':
+        return solution
     return repairedSol
 
 def getFitnessValue(solution, nodeList):
@@ -153,20 +170,18 @@ def getTotalWeight(solution,nodeList):
     return total
 
 if __name__ == "__main__":
-
-    path = "graphs\\"+Filename #TODO:buraya path gelecek
+    path = "graphs\\003.txt" #TODO:buraya path gelecek
     nodeList = readFile(path)
     solutionList = []
     CrossOverPopulation = []
     MutationPopulation = []
     bestSolutions = []
-
-    if tokens[6] == "1/n":
+    print("Initial population is creating")
+    print("Initial population is repairing")
+    if tokens[5] == "1/n":
         MUTATIONPROB = 1 / len(nodeList)
     else:
         MUTATIONPROB = float(tokens[5])
-    print("Initial population is creating")
-    print("Initial population is repairing")
     for i in range(POP_SIZE):#POP_SIZE
         solution = generate(len(nodeList))
         while isNotFeasible(solution, nodeList):
@@ -177,7 +192,7 @@ if __name__ == "__main__":
 
     matching_pool = []
     while GEN_NUMBER != 0:
-        print("Number of the generation ",GEN_NUMBER1 - GEN_NUMBER)
+        print("Number of the generation ",GEN_NUMBER1-GEN_NUMBER)
         for i in range(POP_SIZE):
             matching_pool.append(selectSolution(solutionList,nodeList))
 
@@ -211,8 +226,10 @@ if __name__ == "__main__":
             MutationPopulation.append(mutation)
 
 
-        for i in range(len(MutationPopulation)):  # POP_SIZE
+        for i in range(POP_SIZE):  # POP_SIZE
+            print(MutationPopulation[i])
             while isNotFeasible(MutationPopulation[i], nodeList):
+                # print(MutationPopulation[i])
                 MutationPopulation[i] = repair(MutationPopulation[i], nodeList)
 
         solutionList.clear()
@@ -227,6 +244,7 @@ if __name__ == "__main__":
                 max =getFitnessValue(MutationPopulation[i],nodeList)
                 x = i
         bestSolutions.append(MutationPopulation[x])
+
         MutationPopulation.clear()
         GEN_NUMBER -=1
     x = -1
@@ -235,12 +253,16 @@ if __name__ == "__main__":
         if max < getFitnessValue(bestSolutions[i], nodeList):
             max = getFitnessValue(bestSolutions[i], nodeList)
             x = i
-    wrtFile = str(Filename)+str(GEN_NUMBER1)+str(POP_SIZE)+str(CROSSOVER)+str(MUTATIONPROB)+"txt"
+    # Append-adds at last
+
+    wrtFile = "File Name : " + str(Filename) + ", #Generation " + str(GEN_NUMBER1) + ", Pop. Size " + str(
+        POP_SIZE) + ", Crossover Prob. " + str(CROSSOVER) + ", Mutation Prob " + tokens[5] + "txt"
     file1 = open(wrtFile, "w")
     for k in range(len(bestSolutions)):
         strt = '' + str(k) + " " + str(getTotalWeight(bestSolutions[k], nodeList)) + "\n"
         file1.write(strt)
     file1.close()
+    print()
     bestofbest = bestSolutions[x]
     print("Output of the system ")
     print(bestofbest)

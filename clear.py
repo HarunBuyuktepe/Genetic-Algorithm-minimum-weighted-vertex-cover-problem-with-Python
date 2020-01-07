@@ -1,29 +1,9 @@
 from Node import Node
 import random
 import sys
+# print ('Number of arguments:', len(sys.argv), 'arguments.')
+# print ('Argument List:', str(sys.argv))
 
-
-tokens = (str(sys.argv).replace('\'','').replace(',','').replace(']','').split())
-if len(tokens)==6:
-    print('Name of the graph file ',tokens[1])
-    print('Number of generations ',tokens[2])
-    print('Population size ',tokens[3])
-    print('Crossover probability ',tokens[4])
-    print('Mutation probability ',tokens[5])
-else:
-    print("Wrong Format")
-
-# Size of initial population filled with some permutation of 0s and 1s
-POP_SIZE = 100
-# Maximum, Minimum number of generations the algorithm will run
-GEN_NUMBER = 100
-GEN_NUMBER1 = 100
-# crossoverProbability
-CROSSOVER = 0.5
-# Mutasyon
-MUTATIONPROB = 0.05
-
-FileName = "030.txt"
 
 def generate(number): #population size
     randomList=""
@@ -159,8 +139,25 @@ def getTotalWeight(solution,nodeList):
 
     return total
 
-if __name__ == "__main__":
-    path = "graphs\\030.txt" #TODO:buraya path gelecek
+def main(File,Gen,pop,cro,muto):
+    Filename = File
+    # Size of initial population filled with some permutation of 0s and 1s
+    POP_SIZE = pop
+    # Maximum, Minimum number of generations the algorithm will run
+    GEN_NUMBER = Gen
+    GEN_NUMBER1 = Gen
+    # crossoverProbability
+    CROSSOVER = cro
+    # Mutasyon
+    MUTATIONPROB = muto
+    print('Name of the graph file ', Filename)
+    print('Number of generations ', GEN_NUMBER )
+    print('Population size ', POP_SIZE)
+    print('Crossover probability ', CROSSOVER)
+    print('Mutation probability ', MUTATIONPROB)
+    print(Filename, " ", GEN_NUMBER, " ", POP_SIZE, " ", CROSSOVER, " ", MUTATIONPROB)
+    path = "graphs\\"+Filename
+    print(path )
     nodeList = readFile(path)
     solutionList = []
     CrossOverPopulation = []
@@ -172,6 +169,7 @@ if __name__ == "__main__":
         MUTATIONPROB = 1 / len(nodeList)
     else:
         MUTATIONPROB = float(MUTATIONPROB)
+
     for i in range(POP_SIZE):#POP_SIZE
         solution = generate(len(nodeList))
         while isNotFeasible(solution, nodeList):
@@ -245,7 +243,7 @@ if __name__ == "__main__":
             x = i
     # Append-adds at last
 
-    wrtFile = "File Name : " + str(FileName) + ", #Generation " + str(GEN_NUMBER1) + ", Pop. Size " + str(
+    wrtFile = "File Name : " + str(Filename) + ", #Generation " + str(GEN_NUMBER1) + ", Pop. Size " + str(
         POP_SIZE) + ", Crossover Prob. " + str(CROSSOVER) + ", Mutation Prob " + tokens[5] + "txt"
     file1 = open(wrtFile, "w")
     for k in range(len(bestSolutions)):
@@ -257,11 +255,25 @@ if __name__ == "__main__":
     print("Output of the system ")
     print(bestofbest)
     print()
-    print("Graph Name is ")
-    print("Generation size is ")
-    print("Population size is ")
-    print("Crossover probability is ")
-    print("Mutation probability is ")
+    print("Graph Name is ",Filename)
+    print("Generation size is ",GEN_NUMBER)
+    print("Population size is ",POP_SIZE)
+    print("Crossover probability is ",CROSSOVER)
+    print("Mutation probability is ",MUTATIONPROB)
     print("The best solution is ", getTotalWeight(bestofbest,nodeList))
 
+main("030.txt",400,100,0.5,"0.05")
 
+main("030.txt",400,200,0.5,"0.05")
+
+main("030.txt",400,100,0.9,"0.05")
+
+main("030.txt",400,200,0.9,"0.05")
+
+main("030.txt",400,100,0.5,"1/n")
+
+main("030.txt",400,200,0.5,"1/n")
+
+main("030.txt",400,100,0.9,"1/n")
+
+main("030.txt",400,200,0.9,"1/n")
