@@ -1,28 +1,28 @@
 from Node import Node
 import random
-
+import sys
 # print ('Number of arguments:', len(sys.argv), 'arguments.')
 # print ('Argument List:', str(sys.argv))
 
-# tokens = (str(sys.argv).replace('\'','').replace(',','').replace(']','').split())
-# if len(tokens)==6:
-#     print('Name of the graph file ',tokens[1])
-#     print('Number of generations ',tokens[2])
-#     print('Population size ',tokens[3])
-#     print('Crossover probability ',tokens[4])
-#     print('Mutation probability ',tokens[5])
-# else:
-#     print("Wrong Format")
-
+tokens = (str(sys.argv).replace('\'','').replace(',','').replace(']','').split())
+if len(tokens)==7:
+    print('Name of the graph file ',tokens[2])
+    print('Number of generations ',tokens[3])
+    print('Population size ',tokens[4])
+    print('Crossover probability ',tokens[5])
+    print('Mutation probability ',tokens[6])
+else:
+    print("Wrong Format")
+Filename=tokens[2]
 # Size of initial population filled with some permutation of 0s and 1s
-POP_SIZE = 4
+POP_SIZE = int(tokens[4])
 # Maximum, Minimum number of generations the algorithm will run
-GEN_NUMBER = 4
+GEN_NUMBER = int(tokens[3])
 # crossoverProbability
-CROSSOVER = 0.5
+CROSSOVER = float(tokens[5])
 # Mutasyon
 MUTATIONPROB = 0.05
-
+print(Filename," ", GEN_NUMBER," ",POP_SIZE," ",CROSSOVER," ")
 def generate(number): #population size
     randomList=""
     for i in range(number):
@@ -152,12 +152,18 @@ def getTotalWeight(solution,nodeList):
     return total
 
 if __name__ == "__main__":
-    path = "graphs\\003.txt" #TODO:buraya path gelecek
+
+    path = "graphs\\"+Filename #TODO:buraya path gelecek
     nodeList = readFile(path)
     solutionList = []
     CrossOverPopulation = []
     MutationPopulation = []
     bestSolutions = []
+
+    if tokens[6] == "1/n":
+        MUTATIONPROB = 1 / len(nodeList)
+    else:
+        MUTATIONPROB = float(tokens[5])
     print("Initial population is creating")
     print("Initial population is repairing")
     for i in range(POP_SIZE):#POP_SIZE
@@ -220,7 +226,6 @@ if __name__ == "__main__":
                 max =getFitnessValue(MutationPopulation[i],nodeList)
                 x = i
         bestSolutions.append(MutationPopulation[x])
-
         MutationPopulation.clear()
         GEN_NUMBER -=1
     x = -1
@@ -234,11 +239,11 @@ if __name__ == "__main__":
     print("Output of the system ")
     print(bestofbest)
     print()
-    print("Graph Name is ")
-    print("Generation size is ")
-    print("Population size is ")
-    print("Crossover probability is ")
-    print("Mutation probability is ")
+    print("Graph Name is ",Filename)
+    print("Generation size is ",GEN_NUMBER)
+    print("Population size is ",POP_SIZE)
+    print("Crossover probability is ",CROSSOVER)
+    print("Mutation probability is ",MUTATIONPROB)
     print("The best solution is ", getTotalWeight(bestofbest,nodeList))
 
 
