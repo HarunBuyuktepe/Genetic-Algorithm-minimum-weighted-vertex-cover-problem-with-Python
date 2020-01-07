@@ -18,11 +18,12 @@ Filename=tokens[2]
 POP_SIZE = int(tokens[4])
 # Maximum, Minimum number of generations the algorithm will run
 GEN_NUMBER = int(tokens[3])
+GEN_NUMBER1= int(tokens[3])
 # crossoverProbability
 CROSSOVER = float(tokens[5])
 # Mutasyon
-MUTATIONPROB = 0.05
-print(Filename," ", GEN_NUMBER," ",POP_SIZE," ",CROSSOVER," ")
+MUTATIONPROB =tokens[6]
+print(Filename," ", GEN_NUMBER," ",POP_SIZE," ",CROSSOVER," ",MUTATIONPROB)
 def generate(number): #population size
     randomList=""
     for i in range(number):
@@ -176,7 +177,7 @@ if __name__ == "__main__":
 
     matching_pool = []
     while GEN_NUMBER != 0:
-        print("Number of the generation ",GEN_NUMBER)
+        print("Number of the generation ",GEN_NUMBER1 - GEN_NUMBER)
         for i in range(POP_SIZE):
             matching_pool.append(selectSolution(solutionList,nodeList))
 
@@ -211,8 +212,8 @@ if __name__ == "__main__":
 
 
         for i in range(len(MutationPopulation)):  # POP_SIZE
-            while isNotFeasible(MutationPopulation[0], nodeList):
-                MutationPopulation[0] = repair(MutationPopulation[0], nodeList)
+            while isNotFeasible(MutationPopulation[i], nodeList):
+                MutationPopulation[i] = repair(MutationPopulation[i], nodeList)
 
         solutionList.clear()
         matching_pool.clear()
@@ -234,7 +235,12 @@ if __name__ == "__main__":
         if max < getFitnessValue(bestSolutions[i], nodeList):
             max = getFitnessValue(bestSolutions[i], nodeList)
             x = i
-
+    wrtFile = str(Filename)+str(GEN_NUMBER1)+str(POP_SIZE)+str(CROSSOVER)+str(MUTATIONPROB)+"txt"
+    file1 = open(wrtFile, "w")
+    for k in range(len(bestSolutions)):
+        strt = '' + str(k) + " " + str(getTotalWeight(bestSolutions[k], nodeList)) + "\n"
+        file1.write(strt)
+    file1.close()
     bestofbest = bestSolutions[x]
     print("Output of the system ")
     print(bestofbest)

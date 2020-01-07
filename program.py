@@ -18,6 +18,7 @@ import random
 POP_SIZE = 4
 # Maximum, Minimum number of generations the algorithm will run
 GEN_NUMBER = 4
+GEN_NUMBER1 = 4
 # crossoverProbability
 CROSSOVER = 0.5
 # Mutasyon
@@ -170,7 +171,7 @@ if __name__ == "__main__":
 
     matching_pool = []
     while GEN_NUMBER != 0:
-        print("Number of the generation ",GEN_NUMBER)
+        print("Number of the generation ",GEN_NUMBER1-GEN_NUMBER)
         for i in range(POP_SIZE):
             matching_pool.append(selectSolution(solutionList,nodeList))
 
@@ -205,8 +206,9 @@ if __name__ == "__main__":
 
 
         for i in range(len(MutationPopulation)):  # POP_SIZE
-            while isNotFeasible(MutationPopulation[0], nodeList):
-                MutationPopulation[0] = repair(MutationPopulation[0], nodeList)
+            while isNotFeasible(MutationPopulation[i], nodeList):
+                print(MutationPopulation[i])
+                MutationPopulation[i] = repair(MutationPopulation[i], nodeList)
 
         solutionList.clear()
         matching_pool.clear()
@@ -229,7 +231,14 @@ if __name__ == "__main__":
         if max < getFitnessValue(bestSolutions[i], nodeList):
             max = getFitnessValue(bestSolutions[i], nodeList)
             x = i
+    # Append-adds at last
 
+    file1 = open("myfile.txt", "w")  # append mode
+    for k in range(len(bestSolutions)):
+        strt = ''+str(k)+" "+str(getTotalWeight(bestSolutions[k],nodeList))+"\n"
+        file1.write(strt)
+    file1.close()
+    print()
     bestofbest = bestSolutions[x]
     print("Output of the system ")
     print(bestofbest)
